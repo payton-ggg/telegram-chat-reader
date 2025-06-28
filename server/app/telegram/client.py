@@ -1,6 +1,7 @@
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from sqlalchemy.orm import Session
+from fastapi import Depends
 from ..database import get_db
 from .. import models, database
 
