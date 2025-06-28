@@ -4,6 +4,8 @@ from telethon.tl.types import User, Chat, Channel
 from .. import database, models
 from .client import get_client_for_user
 from ..auth import get_current_user
+from telethon.tl.custom.message import Message
+
 
 router = APIRouter()
 
@@ -54,7 +56,8 @@ async def get_messages(
                 "id": m.id,
                 "message": m.message,
                 "date": m.date.isoformat() if m.date else None,
-                "from_id": getattr(m.from_id, 'user_id', None) if m.from_id else None
+                "from_id": getattr(m.from_id, 'user_id', None) if m.from_id else None,
+                "reply_to": m.reply_to.reply_to_msg_id if m.reply_to else None
             }
             for m in messages if isinstance(m, Message)
         ]
