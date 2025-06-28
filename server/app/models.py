@@ -8,6 +8,7 @@ class TelegramSession(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True)
     session_string = Column(String, nullable=False)
+    phone_code_hash = Column(String, nullable=True)
 
     user = relationship("User", back_populates="telegram_session")
 
