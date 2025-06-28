@@ -5,7 +5,7 @@ from .client import API_ID, API_HASH
 from .. import models, database
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from ..auth import get_current_user
+from ..auth import get_current_user, get_db
 
 router = APIRouter()
 
@@ -17,13 +17,24 @@ class CodeInput(BaseModel):
     code: str
 
 @router.post("/telegram/send-code")
-async def send_code(data: PhoneInput, user: models.User = Depends(get_current_user), db: Session = Depends(database.get_db)):
+async def send_code(data: PhoneInput, user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
     client = TelegramClient(StringSession(), API_ID, API_HASH)
     await client.connect()
     await client.send_code_request(data.phone)
-    db.add(models.TelegramSession(user_id=user.id, session_string=client.session.save()))
+    
+    session_string = client.session.save()
+    
+    session_record = db.query(models.TelegramSession).filter_by(user_id=user.id).first()
+    
+    if session_record:
+        session_record.session_string = session_string
+    else:
+        session_record = models.TelegramSession(user_id=user.id, session_string=session_string)
+        db.add(session_record)
+
     db.commit()
     return {"msg": "Code sent"}
+
 
 @router.post("/telegram/sign-in")
 async def sign_in(data: CodeInput, user: models.User = Depends(get_current_user), db: Session = Depends(database.get_db)):

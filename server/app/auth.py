@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from . import models, security
 from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
 
 from pydantic import BaseModel
 
