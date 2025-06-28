@@ -30,6 +30,16 @@ def get_users(db: Session = Depends(get_db)):
 def register(user: UserCreate, db: Session = Depends(get_db)):
     if db.query(models.User).filter(models.User.email == user.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
+
+    if user.email.find("@") == -1:
+        raise HTTPException(status_code=400, detail="Invalid email")
+
+    if len(user.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long")
+    
+    if user.password.find(" ") != -1:
+        raise HTTPException(status_code=400, detail="Password must not contain spaces")
+    
     hashed_pw = security.hash_password(user.password)
     new_user = models.User(email=user.email, hashed_password=hashed_pw)
     db.add(new_user)
