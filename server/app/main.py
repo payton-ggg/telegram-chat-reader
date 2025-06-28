@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from . import models, database, auth
 from fastapi.middleware.cors import CORSMiddleware
+from app.telegram import auth as telegram_auth
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -15,3 +16,4 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(telegram_auth.router)
