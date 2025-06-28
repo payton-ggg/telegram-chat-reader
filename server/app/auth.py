@@ -49,7 +49,7 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
     token = security.create_access_token(data={"sub": db_user.email})
     return {"access_token": token, "token_type": "bearer"}
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")  # роут логіну
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
     credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials")
