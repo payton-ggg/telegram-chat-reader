@@ -1,12 +1,16 @@
 from telethon import TelegramClient
+from telethon.sessions import StringSession
+from .. import models, database
+
 import os
 
 API_ID = int(os.getenv("TELEGRAM_API_ID"))
 API_HASH = os.getenv("TELEGRAM_API_HASH")
 
-def create_client(session_name: str) -> TelegramClient:
-    return TelegramClient(
-        session=f"app/telegram/session_store/{session_name}",
-        api_id=API_ID,
-        api_hash=API_HASH
-    )
+def get_client_for_user(user_id: int, db: database.SessionLocal) -> TelegramClient:
+    session_record = db.query(models.TelegramSession).filter(models.TelegramSession.user_id == user_id).first()
+    if not session_record:
+        raise Exception("User does not have Telegram session")
+    
+    session = StringSession(session_record.session_string)
+    return TelegramClient(session, API_ID, API_HASH)
