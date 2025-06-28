@@ -1,5 +1,8 @@
 from fastapi import FastAPI
+from . import models, database, auth
 from fastapi.middleware.cors import CORSMiddleware
+
+models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
 
@@ -11,6 +14,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    return {"message": "FastAPI server running"}
+app.include_router(auth.router)
