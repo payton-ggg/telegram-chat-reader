@@ -31,13 +31,16 @@ const AuthForm = ({ type }: { type: "register" | "login" }) => {
       let token: string | null = null;
 
       if (type === "register") {
-        await Register(data);
+        token = await Register(data);
+        if (token) {
+          setToken(token);
+        }
       } else {
         token = await login(data);
         if (token) {
           setToken(token);
-          router.push("/dashboard");
         }
+        router.push("/dashboard");
       }
 
       setSuccess(true);

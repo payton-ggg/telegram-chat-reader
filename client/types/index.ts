@@ -10,3 +10,17 @@ export type AuthState = {
   logout: () => void;
   checkAuth: () => void;
 };
+
+export type Chat = {
+  id: number;
+  title: string;
+  type: string;
+};
+
+export type Message = {
+  id: number;
+  message: string;
+  date: string;
+  from_id: number | null;
+  reply_to: number | null;
+};

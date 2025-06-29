@@ -9,7 +9,7 @@ export const login = async (data: FormInput) => {
     localStorage.setItem("token", access_token);
   }
 
-  return response.data;
+  return access_token;
 };
 
 export const Register = async (data: FormInput) => {
@@ -20,7 +20,7 @@ export const Register = async (data: FormInput) => {
     localStorage.setItem("token", access_token);
   }
 
-  return response.data;
+  return access_token;
 };
 
 export const logout = () => {
