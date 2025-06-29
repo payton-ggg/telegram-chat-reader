@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getMessages } from "@/lib/telegram";
-import { Message } from "@/types/telegram";
+import { Message } from "@/types";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
@@ -44,7 +44,7 @@ export default function ChatMessagesPage() {
           {messages.map((msg) => (
             <li
               key={msg.id}
-              className="border p-3 rounded-md shadow-sm bg-white dark:bg-zinc-800"
+              className="border p-3 rounded-md shadow-sm bg-white dark:bg-gray-200"
             >
               <div className="flex justify-between items-center mb-1">
                 <span className="text-sm text-gray-500">

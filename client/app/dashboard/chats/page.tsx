@@ -50,7 +50,7 @@ export default function ChatsPage() {
         </button>
         <button
           onClick={handleLogoutSystem}
-          className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900"
+          className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-600"
         >
           Вийти з системи
         </button>
@@ -67,7 +67,7 @@ export default function ChatsPage() {
           {chats.map((chat) => (
             <li
               key={chat.id}
-              className="border rounded-md p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
+              className="border rounded-md p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-400 transition"
               onClick={() => router.push(`/dashboard/chats/${chat.id}`)}
             >
               <p className="text-lg font-medium">

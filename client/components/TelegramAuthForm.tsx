@@ -26,7 +26,7 @@ const TelegramAuthForm = () => {
     try {
       await signIn({ phone, code, password: password || undefined });
       router.push("/dashboard/chats");
-    } catch (err: unknown) {
+    } catch (err: { response: { data: { detail: string } } } | any) {
       const detail = err?.response?.data?.detail || "";
       if (detail.includes("password is required")) {
         setStep("password");
