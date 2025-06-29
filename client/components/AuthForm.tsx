@@ -2,24 +2,50 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { login, Register } from "@/lib/auth";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/auth";
 
 const schema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
 
-const AuthForm = () => {
+const AuthForm = ({ type }: { type: "register" | "login" }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    console.log(data);
+  const router = useRouter();
+  const [success, setSuccess] = useState<boolean>(false);
+
+  const setToken = useAuthStore((state) => state.setToken);
+
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    try {
+      let token: string | null = null;
+
+      if (type === "register") {
+        await Register(data);
+      } else {
+        token = await login(data);
+        if (token) {
+          setToken(token);
+          router.push("/dashboard");
+        }
+      }
+
+      setSuccess(true);
+    } catch (err) {
+      console.error("Auth error:", err);
+    }
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col mt-2">
@@ -53,9 +79,10 @@ const AuthForm = () => {
           type="submit"
           className="bg-blue-500 text-white rounded-md px-3 py-2"
         >
-          Login
+          {type === "register" ? "Register" : "Login"}
         </button>
       </div>
+      {success && <p className="text-green-500">Success!</p>}
     </form>
   );
 };
