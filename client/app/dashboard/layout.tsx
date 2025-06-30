@@ -8,18 +8,22 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, checkAuth } = useAuthStore();
+  const { isAuthenticated, initialized } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    useAuthStore.getState().init();
+  }, []);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (initialized && !isAuthenticated) {
       router.push("/");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, initialized, router]);
+
+  if (!initialized) {
+    return <div>Завантаження...</div>;
+  }
 
   return <>{children}</>;
 }

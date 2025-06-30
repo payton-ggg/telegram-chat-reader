@@ -39,6 +39,7 @@ async def get_chats(user: models.User = Depends(get_current_user), db: Session =
 async def get_messages(
     chat_id: int,
     limit: int = 50,
+    offset_id: int = 0,
     user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db)
 ):
@@ -49,17 +50,23 @@ async def get_messages(
         if not await client.is_user_authorized():
             raise HTTPException(status_code=401, detail="Telegram not authorized")
 
-        messages = await client.get_messages(chat_id, limit=limit)
+        messages = await client.get_messages(chat_id, limit=limit, offset_id=offset_id)
 
-        return [
-            {
-                "id": m.id,
-                "message": m.message,
-                "date": m.date.isoformat() if m.date else None,
-                "from_id": getattr(m.from_id, 'user_id', None) if m.from_id else None,
-                "reply_to": m.reply_to.reply_to_msg_id if m.reply_to else None
-            }
-            for m in messages if isinstance(m, Message)
-        ]
+        result = []
+
+        for m in messages:
+            try:
+                if isinstance(m, Message):
+                    result.append({
+                        "id": m.id,
+                        "message": m.message,
+                        "date": m.date.isoformat() if m.date else None,
+                        "from_id": getattr(m.from_id, 'user_id', None) if m.from_id else None,
+                        "reply_to": m.reply_to.reply_to_msg_id if m.reply_to else None
+                    })
+            except Exception as inner_err:
+                print(f"⚠️ Ошибка при сериализации сообщения {getattr(m, 'id', '?')}: {inner_err}")
+        return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+        print("❌ Telegram error:", e)
+        raise HTTPException(status_code=500, detail=str(e))

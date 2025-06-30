@@ -1,13 +1,21 @@
-import { AuthState } from "@/types";
 import { create } from "zustand";
 
-export const useAuthStore = create<AuthState>((set) => ({
+type AuthStore = {
+  token: string | null;
+  isAuthenticated: boolean;
+  initialized: boolean;
+  setToken: (token: string) => void;
+  logout: () => void;
+  init: () => void;
+};
+
+export const useAuthStore = create<AuthStore>((set) => ({
   token: null,
   isAuthenticated: false,
+  initialized: false,
 
   setToken: (token) => {
     localStorage.setItem("token", token);
-    console.log("TOKEN IN STORE:", useAuthStore.getState().token);
     set({ token, isAuthenticated: true });
   },
 
@@ -16,12 +24,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token: null, isAuthenticated: false });
   },
 
-  checkAuth: () => {
+  init: () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      set({ token, isAuthenticated: true });
-    } else {
-      set({ token: null, isAuthenticated: false });
-    }
+    set({
+      token,
+      isAuthenticated: Boolean(token),
+      initialized: true,
+    });
   },
 }));
